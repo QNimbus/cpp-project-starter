@@ -1,42 +1,44 @@
-# Sets the minimum required version of cmake for a project. 
-# See: https://cmake.org/cmake/help/latest/command/cmake_minimum_required.html?highlight=cmake_minimum_required
+# Sets the minimum required version of cmake for a project.
+# See: https://cmake.org/cmake/help/latest/command/cmake_minimum_required.html
 cmake_minimum_required(VERSION 3.20...3.22)
 
-# Add project_options v0.1.0
-# https://github.com/qnimbus/cpp-project-options
+# Uncomment to set a default CXX standard for the external tools like clang-tidy and cppcheck
+# and the targets that do not specify a standard.
+# If not set, the latest supported standard for your compiler is used
+# You can later set fine-grained standards for each target using `target_compile_features`
+set(CMAKE_CXX_STANDARD 17)
+
+# Add project_options v0.1.1 - https://github.com/qnimbus/cpp-project-options
+# See: https://cmake.org/cmake/help/latest/module/FetchContent.html
 include(FetchContent)
-FetchContent_Declare(_project_options URL https://github.com/cpp-best-practices/project_options/archive/refs/tags/v0.12.3.zip)
+FetchContent_Declare(_project_options URL https://github.com/QNimbus/cpp-project-options/archive/refs/tags/v0.1.1.zip)
 FetchContent_MakeAvailable(_project_options)
 include(${_project_options_SOURCE_DIR}/Index.cmake)
 
-# **************   CHANGE ME   ************** 
+# ************************   CHANGE ME   ************************
 # Set the project name and language
-# See: https://cmake.org/cmake/help/latest/command/project.html?highlight=project
+# See: https://cmake.org/cmake/help/latest/command/project.html
 project(myproject
         HOMEPAGE_URL https://github.com/qnimbus/cpp-starter-project
         LANGUAGES CXX
         DESCRIPTION "My project description")
-# ************** / CHANGE ME   ************** 
+# ************************ / CHANGE ME   ************************
 
 # Initialize project_options variable related to this project
 # This overwrites `project_options` and sets `project_warnings`
 # uncomment the options to enable them:
 project_options(
+      ENABLE_PCH
       ENABLE_CONAN
+      # PCH_HEADERS
       # CONAN_OPTIONS
-)
+      )
 
-# Adding the src folder:
+target_compile_features(project_options INTERFACE cxx_std_17)
+
+# Adding the src folder ('start' project):
 add_subdirectory(src)
 
-# Organize default targets into subfolder for better organization in IDE's (e.g. MSVC)
-# set_property(GLOBAL PROPERTY USE_FOLDERS ON)                    # See: https://cmake.org/cmake/help/latest/prop_gbl/USE_FOLDERS.html
-# set_property(GLOBAL PROPERTY VS_STARTUP_PROJECT main)           # See: https://cmake.org/cmake/help/latest/prop_dir/VS_STARTUP_PROJECT.html
-# set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMake") # See: https://cmake.org/cmake/help/latest/prop_gbl/PREDEFINED_TARGETS_FOLDER.html
-
-# Add our CMake modules to the search path.
-# set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
-
-# Includes
-# include(Utilities)
-# include(BuildType)
+# Make 'start' project the Visual Studio startup project
+# See: https://cmake.org/cmake/help/latest/prop_dir/VS_STARTUP_PROJECT.html
+set_property(GLOBAL PROPERTY VS_STARTUP_PROJECT start)
